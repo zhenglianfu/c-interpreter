@@ -1,2 +1,7 @@
-使用C语言构建一个简单的C语言解释器，目标能够实现自举
-解释器会有诸多限制，只考虑基本实现
+浣跨敤C璇█鏋勫缓涓�涓畝鍗曠殑C璇█瑙ｉ噴鍣紝鐩爣鑳藉瀹炵幇鑷妇
+
+瑙ｉ噴鍣ㄤ細鏈夎澶氶檺鍒讹紝鍙�冭檻鍩烘湰瀹炵幇
+
+usage: 
+
+windows user>c-interpreter.exe hello.c
