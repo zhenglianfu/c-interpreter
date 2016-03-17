@@ -8,7 +8,8 @@ int token;
 char *src, *old_src;
 int poolsize;
 int line;
-
+int *text, *stack;
+char *data;
 void next(){
   token = *src++;
   return;
@@ -46,6 +47,21 @@ int main(int argc, char **argv){
   }
   if ((i = read(fd, src, poolsize - 1)) <= 0) {
     printf("read() returned %d\n", i);
+  }
+  
+  if (!(text = malloc(poolsize))) {
+  	printf("could not malloc(%d) for text\n", poolsize);
+  	return -1;
+  } 
+  
+  if (!(data = malloc(poolsize))) {
+  	printf("could not malloc(%d) for data\n", poolsize);
+  	return -1;
+  }
+  
+  if (!(stack = malloc(poolsize))) {
+  	printf("could not malloc(%d) for stack\n", poolsize);
+  	return -1;
   }
   src[i] = 0;
   close(fd);
