@@ -43,9 +43,7 @@ void program(){
 
 int eval(){
 	int op, *tmp;
-	cycle = 0;
 	while(1){
-		cycle ++;
 		op = *pc++;
 		if (op == IMM) {
 			ax = *pc++;
@@ -96,9 +94,9 @@ int eval(){
 			ax = *sp++ < ax;
 		} else if (op == LE) {
 			ax = *sp++ <= ax;
-		} else if (GT) {
+		} else if (op == GT) {
 			ax = *sp++ > ax;
-		} else if (GE) {
+		} else if (op == GE) {
 			ax = *sp++ >= ax;
 		} else if (op == SHL) {
 			ax = *sp++ << ax;
@@ -124,11 +122,19 @@ int eval(){
 		} else if (op == READ) {
 			ax = read(sp[2], (char *)sp[1], *sp);
 		} else if (op == PRTF) {
-			
+			tmp = sp + pc[1];
+			ax = printf((char *)(tmp[-1], tmp[-2], tmp[-3],tmp[-4],tmp[-6])); 
+		} else if (op == MALC) {
+			ax = (int)(malloc(*sp));
+		} else if (op == MSET) {
+			ax = (int)memset((char *)sp[2], (char *)sp[1], *sp);
+		} else if (op == MCMP) {
+			ax= memcmp((char *)sp[2], (char *)sp[1], *sp);
+		} else {
+			printf("unknown instruction: %d\n", op);
+			return -1;
 		}
-		  
 	} 
-	
 	return 0;
 }
 
@@ -149,23 +155,41 @@ int main(int argc, char **argv){
   if ((i = read(fd, src, poolsize - 1)) <= 0) {
     printf("read() returned %d\n", i);
   }
+  src[i] = 0;
+  close(fd);
   
-  if (!(text = malloc(poolsize))) {
+  // allocate memory for virtual machine
+  if (!(text = old_text = malloc(poolsize))) {
   	printf("could not malloc(%d) for text\n", poolsize);
   	return -1;
   } 
-  
   if (!(data = malloc(poolsize))) {
   	printf("could not malloc(%d) for data\n", poolsize);
   	return -1;
   }
-  
   if (!(stack = malloc(poolsize))) {
   	printf("could not malloc(%d) for stack\n", poolsize);
   	return -1;
   }
-  src[i] = 0;
-  close(fd);
+  
+  memset(text, 0, poolsize);
+  memset(data, 0, poolsize);
+  memset(stack, 0, poolsize);
+  bp = sp = (int *)((int)stack + poolsize);
+  ax = 0;
+  
+  i = 0;
+  text[i++] = IMM;
+  text[i++] = 10;
+  text[i++] = PUSH;
+  text[i++] = IMM;
+  text[i++] = 20;
+  text[i++] = ADD;
+  text[i++] = PUSH;
+  text[i++] = EXIT;
+  
+  pc = text;
+  	
   program();
   return eval();
 } 
